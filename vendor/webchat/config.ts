@@ -5,8 +5,8 @@ import type { AppConfig } from './App';
 export const DEFAULT_CONFIG: AppConfig = {
   socketUrl: 'wss://websocket.weni.ai/ws',
   flowsOrigin: 'https://flows.weni.ai',
-  channelUuid: '39cba1da-7547-4cac-8410-f5426738d8f5',
-  vtexAccount: 'karcher',
+  channelUuid: '',
+  vtexAccount: '',
   title: 'Assistente Kärcher',
   subtitle: 'Especialista em produtos Kärcher',
   launcherLabel: 'Assistente Kärcher',

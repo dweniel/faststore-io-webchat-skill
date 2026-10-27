@@ -68,8 +68,10 @@ Não aponte o `fetch` do browser para o domínio da loja.
 ## Marca, antes do primeiro `npm run dev`
 
 O vendor chega com a cara da Kärcher: amarelo `#ffd200`, teal `#146570`, fonte
-Klean, textos de lavadora e o UUID `39cba1da-7547-4cac-8410-f5426738d8f5`.
-Nada disso pode aparecer.
+Klean e textos de lavadora. Nada disso pode aparecer.
+
+`channelUuid` e `vtexAccount` começam vazios. Preencha com o canal e a conta
+desta loja.
 
 Ler a marca da home, não inventar:
 
@@ -113,7 +115,7 @@ quique).
 Na pasta do projeto, antes de subir o dev server:
 
 ```bash
-rg -n -i "karcher|kärcher|klean|ffd200|146570|0f525b|39cba1da|lavadora|aspirador|robô|TODO_LOADER|TODO_MARCA" src
+rg -n -i "karcher|kärcher|klean|ffd200|146570|0f525b|lavadora|aspirador|robô|TODO_LOADER|TODO_MARCA" src
 ```
 
 Nenhum resultado. Comentário que o usuário não vê pode citar o template;
