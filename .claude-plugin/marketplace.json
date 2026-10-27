@@ -1,0 +1,16 @@
+{
+  "name": "dweniel-skills",
+  "owner": {
+    "name": "Daniel Amaral",
+    "url": "https://github.com/dweniel"
+  },
+  "plugins": [
+    {
+      "name": "faststore-v4-copilot",
+      "source": "./",
+      "description": "Copiloto WebChat para FastStore v4 e demonstração da home de lojas que não são FastStore.",
+      "category": "weni",
+      "tags": ["weni", "webchat", "faststore", "vtex", "demo"]
+    }
+  ]
+}

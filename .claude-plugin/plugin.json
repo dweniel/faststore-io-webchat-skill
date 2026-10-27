@@ -1,0 +1,11 @@
+{
+  "name": "faststore-v4-copilot",
+  "displayName": "FastStore v4 — copiloto WebChat",
+  "description": "Instala o copiloto numa loja FastStore v4 ou monta uma demonstração só da página inicial de uma loja que não é FastStore (Wake, VTEX IO, Shopify, loja própria), com o painel de WebChat da Weni.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Daniel Amaral"
+  },
+  "repository": "https://github.com/dweniel/faststore-io-webchat-skill",
+  "keywords": ["weni", "webchat", "faststore", "vtex", "demo"]
+}
