@@ -3,8 +3,9 @@
 Skill que instala o copiloto WebChat da Weni numa loja FastStore v4, ou monta
 uma demonstração só da página inicial de uma loja que não é FastStore (Wake,
 VTEX IO, Shopify, loja própria). As instruções que o agente segue estão em
-`SKILL.md`; o código do painel está em `vendor/webchat/` e o servidor da demo
-em `scripts/homepage-plugin.mjs`.
+`skills/faststore-v4-copilot/SKILL.md`; o código do painel está em
+`skills/faststore-v4-copilot/vendor/webchat/` e o servidor da demo em
+`skills/faststore-v4-copilot/scripts/homepage-plugin.mjs`.
 
 ## Instalar no Claude Code (plugin)
 
@@ -27,8 +28,9 @@ claude --plugin-dir /caminho/para/faststore-io-webchat-skill
 
 ## Instalar no Cursor
 
-Copiar a pasta inteira para `~/.cursor/skills/faststore-v4-copilot`. O Cursor
-aplica a skill sozinho quando o pedido combina com a descrição do `SKILL.md`.
+Copiar `skills/faststore-v4-copilot` para `~/.cursor/skills/faststore-v4-copilot`.
+O Cursor aplica a skill sozinho quando o pedido combina com a descrição do
+`SKILL.md`. A raiz do repositório é o plugin; não é a pasta que o Cursor lê.
 
 ## O que a máquina precisa ter
 
