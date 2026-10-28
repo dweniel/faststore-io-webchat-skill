@@ -1,14 +1,12 @@
 ---
 name: faststore-v4-copilot
 description: >-
-  Instala o copiloto numa loja FastStore v4 ou monta uma demonstração só da
-  página inicial de uma loja que não é FastStore, com o painel de WebChat.
-  Use quando o usuário pedir para onboardar, injetar ou replicar o webchat,
-  copiloto, template da Ri Happy, pacote webchat-copilot ou
-  weni-ai/webchat-faststore em FastStore v4, ou quando pedir uma demo,
-  prova visual ou vitrine da home de uma loja que não é FastStore (Wake,
-  VTEX IO, Shopify, loja própria). Não use para publicar pixel com vtex link,
-  customCss do WWC, nem para a vitrine inteligente.
+  Sobe o WebChat numa FastStore de produção, ou publica na Vercel uma demo
+  no modelo FastStore ou no modelo VTEX IO. Use quando o usuário pedir para
+  onboardar, injetar ou replicar o webchat, copiloto, template da Ri Happy,
+  pacote webchat-copilot ou weni-ai/webchat-faststore, ou quando pedir uma
+  demo da home. Não use para publicar pixel com vtex link, customCss do WWC,
+  nem para a vitrine inteligente.
 ---
 
 # FastStore v4 — copiloto
@@ -24,34 +22,25 @@ da loja ([branding.md](branding.md)) e passar no portão daquele arquivo
 **antes** do primeiro `yarn dev` e antes de qualquer push. O usuário nunca deve
 ver o template cru, nem localmente.
 
-## Escolher o tipo de loja
+## Escolher o caminho
 
-Antes de ler código ou clonar repositório, pergunte com escolha estruturada:
+Antes de ler código ou clonar repositório, pergunte com escolha estruturada.
+Uma pergunta só, com estas três opções, nesta ordem. Mostre o título e a
+descrição. Não escolha pelo usuário. Se ele já tiver dito nesta conversa, não
+pergunte de novo.
 
-- **Loja FastStore v4**
-- **Loja que não é FastStore (demonstração da home)**
+1. **Subir o WebChat na FastStore de produção** — Instala o copiloto na loja
+   que está no ar. Necessário acesso ao repositório da FastStore de produção.
+   O resultado é branch, PR e preview do WebOps; o domínio de produção
+   continua o mesmo.
+2. **Subir uma demo do WebChat no modelo FastStore (publicado na Vercel)** —
+   Monta o painel numa FastStore v4 separada e publica na Vercel. Não altera
+   o repositório nem o domínio de produção.
+3. **Subir uma demo do WebChat no modelo VTEX IO (publicado na Vercel)** —
+   Copia só a página inicial de uma loja VTEX IO, coloca o painel por cima e
+   publica na Vercel. Não entra na loja por pixel nem por `vtex link`.
 
-Não escolha pelo usuário. Se ele já tiver dito nesta conversa, não pergunte de novo.
-
-### Loja que não é FastStore
-
-Seguir só [demo-nao-faststore.md](demo-nao-faststore.md). Parar aqui. Não clonar
-FastStore, não usar WebOps e não usar o trilho `weni-ai/webchat-faststore`.
-
-### Loja FastStore v4
-
-O restante deste arquivo.
-
-## Escolher o modo de entrega
-
-Antes de ler ou alterar código, pergunte com escolha estruturada:
-
-- **Implementar na loja real (Necessario permissão do repositorio)**
-- **Fazer uma demo independente (Homologação)**
-
-Não escolha pelo usuário.
-
-### Implementar na loja real
+### Subir o WebChat na FastStore de produção
 
 Exigir acesso de leitura ao repositório para inspecionar a implementação atual
 e acesso de escrita para enviar branch e PR. Permissão no VTEX Admin não concede
@@ -72,7 +61,10 @@ HTML e bundles não recuperam fielmente fontes, overrides, CMS e histórico. Pe�
 acesso temporário, um arquivo do repositório ou que alguém autorizado execute a
 skill.
 
-### Fazer uma demo independente (Homologação)
+### Subir uma demo do WebChat no modelo FastStore
+
+O destino é uma URL na Vercel, identificada como demo. Não é o domínio de
+produção e não pede escrita no repositório do cliente.
 
 Dois caminhos. A cópia do commit de produção vem primeiro. O starter que lê o
 CMS público só entra quando esse repositório não está disponível e a loja no ar
@@ -88,8 +80,8 @@ entregue no commit de produção:
    necessário acesso de escrita ao repositório do cliente.
 3. Não trocar esse commit por um starter genérico.
 
-Pedir: account name VTEX, channel UUID, URL ou pacote e SHA, repositório de
-destino, execução local ou hospedagem temporária.
+Pedir: account name VTEX, channel UUID, URL ou pacote e SHA, e o repositório
+de destino da cópia. A publicação é na Vercel.
 
 A demo preserva o código, layout, CMS e catálogo daquele commit, acrescentando
 apenas o copiloto.
@@ -130,16 +122,28 @@ WebOps original.
 Validar se o canal aceita a origem da demo; uma allowlist pode impedir o socket
 fora do domínio aprovado.
 
-Identificar visualmente a URL como demo/homologação. Aprovação da demo não
-publica nada: depois dela, executar novamente no modo loja real para gerar o PR
-e o preview oficial do WebOps.
+Identificar visualmente a URL como demo. Depois da verificação no browser,
+publicar com `npx vercel` e entregar essa URL. Não encerrar só com o
+localhost. Aprovação da demo não publica nada na loja: para ir a produção,
+executar de novo a opção da FastStore de produção, que gera o PR e o preview
+oficial do WebOps.
 
-## Escolher o caminho
+### Subir uma demo do WebChat no modelo VTEX IO
+
+Seguir só [demo-nao-faststore.md](demo-nao-faststore.md). Parar aqui. Não
+clonar FastStore, não usar WebOps e não usar o trilho
+`weni-ai/webchat-faststore`.
+
+A loja tem de ser VTEX IO (`__RUNTIME__`, `myvtex.com`). O destino é a URL da
+Vercel, com o badge de demonstração. Aprovação dessa URL não publica nada na
+conta VTEX.
+
+## Não misturar com outro produto
 
 | Alvo | Fazer |
 |---|---|
 | FastStore v4 (Next.js, `@faststore/cli`, `src/themes`, URL `.vtex.app`) | Esta skill. |
-| VTEX IO (`__RUNTIME__`, `myvtex.com`, pixel `vtex.agentic-cx`) | Parar. Este template não entra por pixel. Não misturar os dois caminhos. |
+| VTEX IO (`__RUNTIME__`, `myvtex.com`, pixel `vtex.agentic-cx`) | Não usar este template nem pixel. A demo de home é a opção 3, em [demo-nao-faststore.md](demo-nao-faststore.md). |
 | Vitrine em tela dividida, `product_list`, carrinho | Skill `weni-vitrine-inteligente`. |
 | Só restilizar o balão nativo | `customCss` do WWC, skill `weni-dev-toolkit`. Isso não vira o trilho. |
 

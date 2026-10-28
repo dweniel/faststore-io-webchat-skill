@@ -134,4 +134,11 @@ string renderizada, cor e UUID não.
 - um link da home abre o site original em outra aba e esta aba continua na home;
 - abaixo de 520 px o painel ocupa a largura. Confirmar os dois largos se a mudança mexeu no breakpoint.
 
-Não fazer commit nem push sem o usuário pedir.
+## Publicar na Vercel
+
+Depois dessa verificação, publicar com `npx vercel` (a máquina precisa do login
+da Vercel) e entregar a URL. O badge de demonstração permanece na página
+publicada. Não fazer `vtex link` nem instalar app na conta.
+
+Não fazer commit nem push sem o usuário pedir. Publicar na Vercel sobe o
+diretório local; não substitui um commit.
