@@ -8,7 +8,7 @@
     {
       "name": "faststore-v4-copilot",
       "source": "./",
-      "description": "Copiloto WebChat para FastStore v4 e demonstração da home de lojas que não são FastStore.",
+      "description": "Sobe o WebChat numa FastStore de produção, ou publica na Vercel uma demo no modelo FastStore ou no modelo VTEX IO.",
       "category": "weni",
       "tags": ["weni", "webchat", "faststore", "vtex", "demo"]
     }
