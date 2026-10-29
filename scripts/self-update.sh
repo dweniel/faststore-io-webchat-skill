@@ -13,7 +13,7 @@ set -eu
 
 MARKETPLACE="dweniel-skills"
 PLUGIN="faststore-v4-copilot@dweniel-skills"
-THROTTLE_SECONDS=21600 # 6h
+THROTTLE_SECONDS=600 # 10 min
 
 DATA_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.claude/plugins/data/faststore-v4-copilot-dweniel-skills}"
 MARKER="$DATA_DIR/.last-self-update"

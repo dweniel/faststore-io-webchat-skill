@@ -36,7 +36,7 @@ prática.
 Este plugin traz um hook `SessionStart` ([hooks/hooks.json](hooks/hooks.json),
 [scripts/self-update.sh](scripts/self-update.sh)) que roda `claude plugin
 marketplace update` + `claude plugin update` a cada início de sessão,
-limitado a uma vez por 6h. Uma vez instalada **essa** versão, cada sessão nova
+limitado a uma vez a cada 10 minutos. Uma vez instalada **essa** versão, cada sessão nova
 já se atualiza sozinha, sem depender do auto-update nativo.
 
 Isso não ajuda quem já está preso numa cópia antiga: o hook só existe dentro
