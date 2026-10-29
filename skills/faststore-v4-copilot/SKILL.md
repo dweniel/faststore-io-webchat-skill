@@ -50,11 +50,42 @@ Fluxo:
 
 1. Clonar o repositório conectado ao WebOps.
 2. Criar uma branch `feat/copilot-webchat`.
-3. Instalar e validar o copiloto.
-4. Com autorização do usuário, enviar a branch e abrir PR.
-5. Entregar o preview de branch gerado pelo WebOps para aprovação.
-6. Após aprovação, fazer merge na branch de produção. O domínio de produção
-   permanece o mesmo; não há troca manual de link.
+3. Instalar o copiloto.
+4. Subir a loja localmente e passar na verificação do browser. Este passo é
+   obrigatório. Sem `yarn dev` em `http://localhost:3000` e sem a lista de
+   [Verificar no browser](#verificar-no-browser) cumprida, parar. Não existe
+   atalho para o GitHub da loja.
+5. Portão de envio, abaixo. Só depois dele: push da branch e abertura do PR.
+6. Entregar o preview de branch gerado pelo WebOps para aprovação.
+7. Merge na branch de produção é outro portão, separado. O domínio de
+   produção permanece o mesmo; não há troca manual de link.
+
+### Portão antes do GitHub de produção
+
+O destino é o repositório oficial da FastStore de produção do cliente. A
+escolha da opção de produção no início desta conversa não autoriza commit,
+push, PR nem merge. "Pode seguir", "sobe" ou "fica pronto" durante a
+instalação também não.
+
+Commit local na branch `feat/copilot-webchat` pode existir para preparar o
+diff. `git push`, `gh pr create` e merge ficam bloqueados até o operador
+confirmar **depois** da loja rodando e da verificação no browser.
+
+Ao chegar nesse ponto, parar e mostrar, em texto:
+
+- org/nome e URL do remoto;
+- branch `feat/copilot-webchat`;
+- que o código alterado vai para o GitHub de produção da loja;
+- que o domínio de produção ainda não muda neste passo (só branch e PR).
+
+Perguntar se o operador autoriza o envio **desse** repositório. Esperar uma
+resposta explícita nesta conversa, citando o envio ou o repositório. Sem essa
+resposta, não executar push, PR nem merge. Não inferir o sim de uma mensagem
+anterior.
+
+O merge na branch de produção pede uma confirmação nova, também explícita,
+depois que o operador tiver visto o preview do WebOps. A confirmação do push
+não vale para o merge.
 
 Sem acesso de leitura, não tente reconstruir a loja raspando o site publicado:
 HTML e bundles não recuperam fielmente fontes, overrides, CMS e histórico. Peça
@@ -257,4 +288,5 @@ Na home, com a janela ≥ 1280 px:
 
 Abaixo de 1280 px o painel cobre a página. Confirmar os dois largos se a mudança mexeu no breakpoint.
 
-Não fazer commit nem push sem o usuário pedir.
+No caminho de produção, esta verificação vem antes de qualquer push. O envio
+ao GitHub oficial da loja segue o portão antes do GitHub de produção.
