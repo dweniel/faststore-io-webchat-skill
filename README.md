@@ -26,6 +26,32 @@ Para testar uma cópia local sem instalar:
 claude --plugin-dir /caminho/para/faststore-io-webchat-skill
 ```
 
+### Manter atualizado
+
+`dweniel-skills` é um marketplace de terceiro, então o auto-update nativo do
+Claude Code vem **desligado** por padrão e, mesmo ligado, só roda em segundo
+plano com atraso de até 10 minutos numa sessão ativa — pouco confiável na
+prática.
+
+Este plugin traz um hook `SessionStart` ([hooks/hooks.json](hooks/hooks.json),
+[scripts/self-update.sh](scripts/self-update.sh)) que roda `claude plugin
+marketplace update` + `claude plugin update` a cada início de sessão,
+limitado a uma vez por 6h. Uma vez instalada **essa** versão, cada sessão nova
+já se atualiza sozinha, sem depender do auto-update nativo.
+
+Isso não ajuda quem já está preso numa cópia antiga: o hook só existe dentro
+da versão que o carrega. Quem instalou antes desta mudança faz a atualização
+manual **uma vez**:
+
+```
+claude plugin marketplace update dweniel-skills
+claude plugin update faststore-v4-copilot@dweniel-skills
+```
+
+ou, dentro de uma sessão, `/plugin` → aba Marketplaces → `dweniel-skills` →
+**Update marketplace**. Depois disso, as sessões seguintes se mantêm em dia
+sozinhas.
+
 ## Instalar no Cursor
 
 Copiar `skills/faststore-v4-copilot` para `~/.cursor/skills/faststore-v4-copilot`.
