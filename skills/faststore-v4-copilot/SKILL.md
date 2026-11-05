@@ -1,12 +1,13 @@
 ---
 name: faststore-v4-copilot
 description: >-
-  Sobe o WebChat numa FastStore de produção, ou publica na Vercel uma demo
-  no modelo FastStore ou no modelo VTEX IO. Use quando o usuário pedir para
-  onboardar, injetar ou replicar o webchat, copiloto, template da Ri Happy,
-  pacote webchat-copilot ou weni-ai/webchat-faststore, ou quando pedir uma
-  demo da home. Não use para publicar pixel com vtex link, customCss do WWC,
-  nem para a vitrine inteligente.
+  Sobe o WebChat numa FastStore de produção, publica na Vercel uma demo
+  FastStore ou VTEX IO, ou linka o painel num workspace de desenvolvimento
+  de uma loja VTEX IO. Use quando o usuário pedir para onboardar, injetar ou
+  replicar o webchat, copiloto, template da Ri Happy, pacote webchat-copilot
+  ou weni-ai/webchat-faststore, ou quando pedir uma demo da home ou um
+  vtex link do painel. Não use para customCss do WWC, para o pixel
+  vtex.agentic-cx, nem para a vitrine inteligente. Não publique no master.
 ---
 
 # FastStore v4 — copiloto
@@ -25,7 +26,7 @@ ver o template cru, nem localmente.
 ## Escolher o caminho
 
 Antes de ler código ou clonar repositório, pergunte com escolha estruturada.
-Uma pergunta só, com estas três opções, nesta ordem. Mostre o título e a
+Uma pergunta só, com estas quatro opções, nesta ordem. Mostre o título e a
 descrição. Não escolha pelo usuário. Se ele já tiver dito nesta conversa, não
 pergunte de novo.
 
@@ -39,6 +40,9 @@ pergunte de novo.
 3. **Subir uma demo do WebChat no modelo VTEX IO (publicado na Vercel)** —
    Copia só a página inicial de uma loja VTEX IO, coloca o painel por cima e
    publica na Vercel. Não entra na loja por pixel nem por `vtex link`.
+4. **Subir o WebChat na loja VTEX IO, num workspace de desenvolvimento** —
+   Linka o painel na conta do cliente, só nesse workspace. O `master` e o
+   domínio de produção não mudam. Exige o papel VTEX IO Admin.
 
 ### Subir o WebChat na FastStore de produção
 
@@ -169,12 +173,23 @@ A loja tem de ser VTEX IO (`__RUNTIME__`, `myvtex.com`). O destino é a URL da
 Vercel, com o badge de demonstração. Aprovação dessa URL não publica nada na
 conta VTEX.
 
+### Subir o WebChat na loja VTEX IO, num workspace de desenvolvimento
+
+Seguir só [io-link.md](io-link.md). Parar aqui. Não clonar FastStore, não
+usar WebOps, não publicar na Vercel e não instalar o app no `master`.
+
+A conta é VTEX IO. O destino é
+`https://{workspace}--{conta}.myvtex.com`. O link não altera o domínio de
+produção. Sem o papel VTEX IO Admin, parar e pedir esse papel; não cair na
+cópia da Vercel no lugar.
+
 ## Não misturar com outro produto
 
 | Alvo | Fazer |
 |---|---|
 | FastStore v4 (Next.js, `@faststore/cli`, `src/themes`, URL `.vtex.app`) | Esta skill. |
-| VTEX IO (`__RUNTIME__`, `myvtex.com`, pixel `vtex.agentic-cx`) | Não usar este template nem pixel. A demo de home é a opção 3, em [demo-nao-faststore.md](demo-nao-faststore.md). |
+| VTEX IO sem acesso de link (`__RUNTIME__`, `myvtex.com`) | Demo da home na Vercel, opção 3, em [demo-nao-faststore.md](demo-nao-faststore.md). |
+| VTEX IO com papel VTEX IO Admin | Painel no workspace de desenvolvimento, opção 4, em [io-link.md](io-link.md). Não usar o pixel `vtex.agentic-cx` nem o `master`. |
 | Vitrine em tela dividida, `product_list`, carrinho | Skill `weni-vitrine-inteligente`. |
 | Só restilizar o balão nativo | `customCss` do WWC, skill `weni-dev-toolkit`. Isso não vira o trilho. |
 

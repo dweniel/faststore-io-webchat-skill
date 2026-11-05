@@ -2,7 +2,8 @@
 
 Cópia **só da página inicial** do site do cliente, com o painel de WebChat
 por cima. Não é a loja de verdade: não publica, não faz `vtex link`, não
-instala app e não replica as outras rotas.
+instala app e não replica as outras rotas. Para o painel na loja VTEX IO, num
+workspace de desenvolvimento, seguir [io-link.md](io-link.md).
 
 O painel é o componente em [vendor/webchat](vendor/webchat) (extraído do app
 de pixel). Ele abre o próprio socket em `wss://websocket.weni.ai/ws`. Não é o
@@ -27,7 +28,10 @@ App Vite + React 18 no workspace. Copiar para `src/webchat/`:
 
 Entrada própria, `src/main.tsx`: injeta `STYLES` num `<style>` e monta
 `<App config={resolveConfig()} />` com `createRoot` num container no `<body>`.
-Não usar `ReactDOM.render` nem o entry de pixel.
+Não usar `ReactDOM.render` nem o entry de pixel. Esta regra vale só para a
+cópia na Vercel, que é um app Vite com `createRoot`. No caminho de vtex link
+([io-link.md](io-link.md)) o `ReactDOM.render` é necessário, porque o
+render-runtime não monta o pixel; não copie a regra daqui para lá.
 
 Copiar [scripts/homepage-plugin.mjs](scripts/homepage-plugin.mjs) para a raiz
 do projeto e ligá-lo no `vite.config`. `origin` é a URL que o usuário passou.
