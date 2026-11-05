@@ -1,11 +1,17 @@
 {
   "name": "faststore-v4-copilot",
   "displayName": "FastStore v4 — copiloto WebChat",
-  "description": "Sobe o WebChat numa FastStore de produção, ou publica na Vercel uma demo no modelo FastStore ou no modelo VTEX IO.",
-  "version": "1.0.4",
+  "description": "Sobe o WebChat numa FastStore de produção, publica na Vercel uma demo FastStore ou VTEX IO, ou linka o painel num workspace de desenvolvimento de uma loja VTEX IO.",
+  "version": "1.0.5",
   "author": {
     "name": "Daniel Amaral"
   },
   "repository": "https://github.com/dweniel/faststore-io-webchat-skill",
-  "keywords": ["weni", "webchat", "faststore", "vtex", "demo"]
+  "keywords": [
+    "weni",
+    "webchat",
+    "faststore",
+    "vtex",
+    "demo"
+  ]
 }

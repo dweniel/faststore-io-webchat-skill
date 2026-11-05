@@ -8,9 +8,15 @@
     {
       "name": "faststore-v4-copilot",
       "source": "./",
-      "description": "Sobe o WebChat numa FastStore de produção, ou publica na Vercel uma demo no modelo FastStore ou no modelo VTEX IO.",
+      "description": "Sobe o WebChat numa FastStore de produção, publica na Vercel uma demo FastStore ou VTEX IO, ou linka o painel num workspace de desenvolvimento de uma loja VTEX IO.",
       "category": "weni",
-      "tags": ["weni", "webchat", "faststore", "vtex", "demo"]
+      "tags": [
+        "weni",
+        "webchat",
+        "faststore",
+        "vtex",
+        "demo"
+      ]
     }
   ]
 }
