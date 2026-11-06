@@ -38,6 +38,23 @@ export interface ChatMessage {
 
 const MEDIA_KINDS: MediaKind[] = ['image', 'video', 'audio', 'file'];
 
+// Same rule as weni-ai/webchat-service `unescapeEscapedUrlSlashes`: the agent
+// text often still carries JSON-escaped slashes (`https:\/\/…`). Only those
+// inside an http(s) token are turned back into `/`. A `\/` that is not part
+// of a URL stays as written.
+const HTTP_URL_TOKEN = /https?:(?:\/\/|\\\/\\\/)[^\s<>"']+/gi;
+
+export function unescapeEscapedUrlSlashes(text: string): string {
+  if (!text.includes('\\/')) return text;
+  return text.replace(HTTP_URL_TOKEN, (url) => url.replace(/\\\//g, '/'));
+}
+
+function unescapeUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  return trimmed ? unescapeEscapedUrlSlashes(trimmed) : undefined;
+}
+
 function mediaKindOf(body: WireMessageBody): MediaKind | undefined {
   const kind = body.type as MediaKind | undefined;
   if (kind && MEDIA_KINDS.includes(kind)) return kind;
@@ -75,8 +92,8 @@ function toProduct(item: WireProductItem, idx: number): ChatProduct | null {
     // Only a real discount: `price` is the list price and `sale_price` the one
     // being charged, so they are equal whenever there is no promo.
     listPrice: listPrice !== undefined && price !== undefined && listPrice > price ? listPrice : undefined,
-    image: item.image?.trim() || undefined,
-    url: item.product_url?.trim() || undefined,
+    image: unescapeUrl(item.image),
+    url: unescapeUrl(item.product_url),
     sellerId: item.seller_id?.trim() || undefined,
     description: item.description?.trim() || undefined,
   };
@@ -124,7 +141,7 @@ export function expandFinalEnvelope(idBase: string, raw: string): ChatMessage[] 
     .map((item, index) => {
       const row = item as { text?: string; catalog_message?: WireMessageBody['catalog_message'] };
       return toChatMessage(`${idBase}_${index}`, 'agent', {
-        text: row.text,
+        text: row.text ? unescapeEscapedUrlSlashes(row.text) : row.text,
         catalog_message: row.catalog_message,
       });
     })
@@ -178,7 +195,7 @@ export function toChatMessage(
 ): ChatMessage {
   if (!body) return { id, direction, time, text: '' };
 
-  const text = (body.text ?? body.caption ?? '').trim();
+  const text = unescapeEscapedUrlSlashes((body.text ?? body.caption ?? '').trim());
   const { products, header } = typedProducts(body);
   // A catalog message often names the category in both the body and the group;
   // printing it twice, one under the other, just looks like a bug.
@@ -189,7 +206,7 @@ export function toChatMessage(
     direction,
     time,
     text,
-    mediaUrl: body.media_url?.trim() || undefined,
+    mediaUrl: unescapeUrl(body.media_url),
     mediaKind: mediaKindOf(body),
     mediaName: body.media_url ? basename(body.media_url) : undefined,
     quickReplies: body.quick_replies?.length ? body.quick_replies : undefined,
