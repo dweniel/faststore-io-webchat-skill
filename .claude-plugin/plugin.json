@@ -2,7 +2,7 @@
   "name": "faststore-v4-copilot",
   "displayName": "FastStore v4 — copiloto WebChat",
   "description": "Sobe o WebChat numa FastStore de produção, publica na Vercel uma demo FastStore ou VTEX IO, ou linka o painel num workspace de desenvolvimento de uma loja VTEX IO.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": {
     "name": "Daniel Amaral"
   },

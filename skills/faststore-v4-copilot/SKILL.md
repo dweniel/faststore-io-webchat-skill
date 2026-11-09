@@ -256,6 +256,22 @@ Dois sockets no mesmo contact id se expulsam. Sintoma: "Reconectando" a cada
 poucos segundos, sem erro útil no log. Por isso a seção nativa sai e `#wwc`
 fica `display: none`.
 
+## Anexo no compositor
+
+O `CopilotComposer` do `weni-ai/webchat-faststore` já manda foto: clipe à
+esquerda, `accept="image/*"`, reencode JPEG e a frase como `caption` do mesmo
+frame. Exigir o contrato abaixo ao copiar esse painel e ao reimplementar o
+compositor. A próxima loja não nasce sem o botão.
+
+O painel B2B da Electrolux validou o mesmo contrato e ampliou o seletor para
+`image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt`.
+
+- Clipe à esquerda do campo. `aria-label` no idioma da loja (`Anexar imagem ou arquivo` em pt-BR). O `input type=file` fica com `display: none`, tem `multiple` e o botão abre o seletor. Controle que não abre nada não entra.
+- O seletor aceita vários arquivos de uma vez. Cada um vai no próprio frame. A frase escrita no campo vai só no primeiro. Um arquivo que falha mostra o nome dele e os outros seguem.
+- Cada arquivo vai no frame do WebSocket, URI `data:` no campo `media`. Não há endpoint de upload. A frase vai como `caption` do mesmo frame do primeiro arquivo. Um frame só com o texto, e a foto em outro, faz o agente responder antes de ver a foto.
+- Imagem: reencodar antes de enviar, lado máximo 1280, `canvas.toDataURL('image/jpeg', 0.82)`. Não mandar o resultado cru do `FileReader` para imagem: URI com parâmetro extra (`codecs=opus` ou `;` a mais) quebra o parse do MIME no socket (`pkg/websocket/helper.go` do weni-webchat-socket corta entre `/` e `;`).
+- Frame grande não devolve erro: fecha o socket e o cliente trata como queda de rede. Limite prático ~8 MB depois do encolhimento. Acima disso, erro visível pedindo arquivo menor. Imagem ilegível: erro pedindo JPG ou PNG.
+
 ## Localizar para a loja
 
 - `POC_CHANNEL_UUID` no `Copilot.tsx` — vem vazio do repositório base.
@@ -299,7 +315,8 @@ Na home, com a janela ≥ 1280 px:
 - `document.querySelector('#wwc')` sem widget nativo visível;
 - `getComputedStyle(document.body).paddingRight` igual a `448px`;
 - borda direita do `header` igual à borda esquerda de `[data-agx-copilot-panel]`;
-- sem loop de "Reconectando".
+- sem loop de "Reconectando";
+- o clipe abre o seletor para vários arquivos e o input não fica visível.
 
 Abaixo de 1280 px o painel cobre a página. Confirmar os dois largos se a mudança mexeu no breakpoint.
 

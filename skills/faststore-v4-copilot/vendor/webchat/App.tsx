@@ -10,6 +10,7 @@ import {
   CollapseIcon,
   CloseIcon,
   MicIcon,
+  PaperclipIcon,
   ArrowRightIcon,
   StopIcon,
   TrashIcon,
@@ -19,6 +20,7 @@ import { addProductToCart, CartError, openHostCart, parseRetailerId, watchHostCa
 import CartNotice, { NOTICE_MS } from './CartNotice';
 import type { ChatProduct } from './mapMessage';
 import { resolveProductUrl } from './product';
+import { ACCEPTED_FILE_TYPES } from './attachments';
 
 export interface AppConfig {
   socketUrl: string;
@@ -98,6 +100,7 @@ export default function App({ config }: { config: AppConfig }) {
   const launcherRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   // Follow new messages only while the visitor is already at the bottom.
   const stickToBottom = useRef(true);
 
@@ -247,6 +250,36 @@ export default function App({ config }: { config: AppConfig }) {
     setDraft('');
   }
 
+  /**
+   * Sends every picked file, one frame each. The caption rides only with the
+   * first file. If that send fails the draft stays, because the phrase never
+   * went out. Any other successful send still clears an empty draft.
+   */
+  async function onPick(files: File[]) {
+    if (!files.length || isBlocked) return;
+    stickToBottom.current = true;
+    const caption = draft.trim();
+    let anySent = false;
+    let firstSent = false;
+    let sawFailure = false;
+    for (let index = 0; index < files.length; index += 1) {
+      const file = files[index];
+      const sent = await sendAttachment(
+        file,
+        file.name,
+        index === 0 ? caption || undefined : undefined,
+        sawFailure ? { keepError: true } : undefined,
+      );
+      if (sent) {
+        anySent = true;
+        if (index === 0) firstSent = true;
+      } else {
+        sawFailure = true;
+      }
+    }
+    if (firstSent || (anySent && !caption)) setDraft('');
+  }
+
   const isBlocked = status === 'forbidden';
   const isRecording = recorder.state === 'recording';
   const voiceSupported = isVoiceSupported();
@@ -369,6 +402,28 @@ export default function App({ config }: { config: AppConfig }) {
                 </>
               ) : (
                 <>
+                  <button
+                    type="button"
+                    className="krc-input-action"
+                    aria-label="Anexar imagem ou arquivo"
+                    disabled={isBlocked}
+                    onClick={() => fileRef.current?.click()}
+                  >
+                    <PaperclipIcon size={18} />
+                  </button>
+                  <input
+                    ref={fileRef}
+                    className="krc-file-input"
+                    type="file"
+                    accept={ACCEPTED_FILE_TYPES}
+                    multiple
+                    tabIndex={-1}
+                    onChange={(event) => {
+                      const picked = Array.from(event.target.files ?? []);
+                      event.target.value = '';
+                      void onPick(picked);
+                    }}
+                  />
                   <span className="krc-input-field">
                     <input
                       ref={inputRef}

@@ -105,10 +105,33 @@ passou. `vtexAccount` vazio fora da VTEX. `logoUrl` aponta para o SVG da loja.
 `suggestions.ts`: trocar as categorias de limpeza pelas do catálogo da home
 (o que a vitrine realmente mostra). A frase do botão é a mensagem enviada.
 
-`BrandLoader.tsx`: metáfora do segmento, SVG e CSS, caixa 160×48, ciclo que
-se fecha, `prefers-reduced-motion` já zera animação no CSS do painel. Moda:
-costura. Outros segmentos: outro gesto (não três pontinhos, não o aspirador).
-Apagar o comentário `TODO_LOADER` quando a metáfora for a da loja.
+`BrandLoader.tsx` é o thinking: o balão que a pessoa olha enquanto a resposta
+não chega. Caprichar aqui é obrigatório. Círculo pontilhado, três pontinhos
+ou a linha horizontal do template não passam.
+
+- Caixa 160×48. O gesto usa a largura do balão. Um spinner pequeno no meio
+  do espaço vazio não conta.
+- Metáfora do segmento, em SVG e CSS. Moda: costura. Eletro: uma volta que
+  se fecha em torno da marca (pista, traço que percorre, símbolo no centro).
+  Outro segmento: outro gesto. Sem aspirador.
+- Um ciclo só, que fecha. O traço sai, percorre a pista, cresce no meio da
+  volta e o frame final desenha o mesmo que o inicial. O `stroke-dashoffset`
+  final é um perímetro (`getTotalLength`); a soma do `stroke-dasharray`
+  permanece esse perímetro. `linear infinite` que nunca pousa não é um ciclo.
+- A marca da loja fica dentro do gesto, na cor do token, legível o tempo
+  todo. O símbolo não esmaece até sumir.
+- Cores só dos tokens: pista em `--krc-line` (ou o teal bem baixo), traço em
+  `--krc-yellow`. Esse token é o destaque curto e pode não ser amarelo.
+- Nenhum CSS posterior redefine o `stroke-dasharray` do traço. Um `EXTRA` no
+  pixel com o traço antigo desfaz a animação.
+- `prefers-reduced-motion` já zera animação em `.krc-assistant-root *`. O
+  frame parado ainda mostra a marca e a pista: o keyframe `100%` coincide
+  com o `0%`.
+- Apagar o comentário `TODO_LOADER` quando a metáfora for a da loja.
+
+Conferir com uma mensagem em voo (`.krc-typing`, aria-label "Digitando").
+O balão some quando a resposta chega, então o print pega a espera. O
+comprimento do path e o `dashoffset` de uma volta batem.
 
 Movimento do painel, do launcher e do hint: a mesma ordem de tempo do site
 (no varejo editorial, perto de 200–320 ms e `cubic-bezier(.4,0,.2,1)`, sem
@@ -134,7 +157,9 @@ string renderizada, cor e UUID não.
 - o badge de demonstração está visível e não cobre o header;
 - o launcher usa a cor de ação da loja, não o amarelo;
 - abrir o painel: logo ou título da loja, pill Sem canal ou Online, sugestões no idioma da loja;
-- o loader não é um aspirador;
+- o thinking (`.krc-typing`) é o gesto da loja na caixa 160×48: marca visível
+  e um ciclo que fecha. Não é a linha do template, nem três pontos, nem um
+  aspirador;
 - um link da home abre o site original em outra aba e esta aba continua na home;
 - abaixo de 520 px o painel ocupa a largura. Confirmar os dois largos se a mudança mexeu no breakpoint.
 

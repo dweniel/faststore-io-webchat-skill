@@ -132,6 +132,13 @@ FastStore; aqui não se usa.
 Ler cor, fonte e logo da loja. Se a home estiver atrás de login, usar a marca
 pública já confirmada com o operador e dizer isso.
 
+O thinking segue o bloco de `BrandLoader.tsx` em
+[demo-nao-faststore.md](demo-nao-faststore.md). Caprichar é obrigatório:
+pista na largura do balão (160×48), a marca legível no centro, um traço que
+completa uma volta e volta ao desenho inicial. Círculo pontilhado, três
+pontinhos e a linha do template não passam. Sem `EXTRA` no pixel redefinindo
+o `stroke-dasharray`.
+
 ## Linkar
 
 CLI em `~/.local/bin/vtex` (`npm install --prefix ~/.local vtex` se não
@@ -170,7 +177,8 @@ No workspace, logado:
 - o launcher usa a cor de ação da loja;
 - abrir o painel: título da loja, pill Sem canal ou Online;
 - `#wwc` sem widget nativo visível;
-- o loader não é o do template;
+- o thinking (`.krc-typing`) é o gesto da loja: pista na largura do balão,
+  marca legível, traço que completa uma volta. Não é o loader do template;
 - o `master` (`https://{conta}.myvtex.com`) não carrega `webchat-panel`.
 
 Origem do socket: `https://{workspace}--{conta}.myvtex.com` precisa estar na

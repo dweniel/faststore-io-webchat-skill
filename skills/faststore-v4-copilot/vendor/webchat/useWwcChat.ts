@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { WwcClient, SocketStatus, AgentSocketFrame, isStreamDelta } from './wwcClient';
 import { toChatMessage, historyToThread, ChatMessage, expandFinalEnvelope, isFinalEnvelopeStream, mergeAgentTurn, unescapeEscapedUrlSlashes } from './mapMessage';
-import { MAX_ATTACHMENT_BYTES, humanSize, kindOfMime, readAsDataUri } from './attachments';
+import { MAX_ATTACHMENT_BYTES, dataUriBytes, encodeImage, humanSize, kindOfMime, readAsDataUri } from './attachments';
 import { startVtexFieldSync, VtexFieldKey } from './vtexFields';
 
 export interface UseWwcChatOptions {
@@ -25,6 +25,12 @@ let seqCounter = 0;
 function nextId(label: string) {
   seqCounter += 1;
   return `${label}_${seqCounter}`;
+}
+
+/** The visitor picks several files at once, so the failing name has to be in the text. */
+function attachmentFailure(name: string | undefined, detail: string): string {
+  const who = name?.trim();
+  return who ? `${who}: ${detail}` : detail;
 }
 
 export function useWwcChat({ from, channelUuid, socketUrl, flowsOrigin, collectVtexFields, vtexAccount }: UseWwcChatOptions) {
@@ -230,28 +236,44 @@ export function useWwcChat({ from, channelUuid, socketUrl, flowsOrigin, collectV
    * local copy rather than waiting for the hosted URL to come back in the ack.
    */
   const sendAttachment = useCallback(
-    async (blob: Blob, name?: string) => {
-      if (!blob.size) return false;
-      if (blob.size > MAX_ATTACHMENT_BYTES) {
-        setError(`O arquivo passa de ${humanSize(MAX_ATTACHMENT_BYTES)}. Tente um menor.`);
+    async (blob: Blob, name?: string, caption?: string, options?: { keepError?: boolean }) => {
+      const fail = (detail: string) => {
+        const text = attachmentFailure(name, detail);
+        setError((current) => (options?.keepError && current ? `${current} ${text}` : text));
         return false;
-      }
+      };
+      if (!blob.size) return fail('O arquivo está vazio.');
 
+      const cleanCaption = caption?.trim().slice(0, 2000) || undefined;
       let dataUri: string;
-      try {
-        dataUri = await readAsDataUri(blob);
-      } catch {
-        setError('Não conseguimos ler o arquivo.');
-        return false;
+      let kind = kindOfMime(blob.type);
+
+      if (blob.type.startsWith('image/')) {
+        const encoded = await encodeImage(blob);
+        if (!encoded) {
+          return fail('Não conseguimos ler essa imagem. Tente uma foto em JPG ou PNG.');
+        }
+        if (dataUriBytes(encoded) > MAX_ATTACHMENT_BYTES) {
+          return fail(`O arquivo passa de ${humanSize(MAX_ATTACHMENT_BYTES)}. Tente um menor.`);
+        }
+        dataUri = encoded;
+        kind = 'image';
+      } else {
+        if (blob.size > MAX_ATTACHMENT_BYTES) {
+          return fail(`O arquivo passa de ${humanSize(MAX_ATTACHMENT_BYTES)}. Tente um menor.`);
+        }
+        try {
+          dataUri = await readAsDataUri(blob);
+        } catch {
+          return fail('Não conseguimos ler o arquivo.');
+        }
       }
 
-      const kind = kindOfMime(blob.type);
       const fields = takePendingFields();
-      const sent = clientRef.current?.sendMedia(kind, dataUri, undefined, fields) ?? false;
+      const sent = clientRef.current?.sendMedia(kind, dataUri, cleanCaption, fields) ?? false;
       if (!sent) {
         if (fields) pendingFields.current = { ...fields, ...pendingFields.current };
-        setError('Não foi possível enviar o arquivo.');
-        return false;
+        return fail('Não foi possível enviar o arquivo.');
       }
       hasSent.current = true;
 
@@ -259,14 +281,12 @@ export function useWwcChat({ from, channelUuid, socketUrl, flowsOrigin, collectV
         id: nextId('user'),
         direction: 'user',
         time: Date.now(),
-        text: '',
-        // A file has nothing to show inline, so it is listed by name and only
-        // media that can actually play carries its bytes into the bubble.
+        text: cleanCaption ?? '',
         mediaUrl: kind === 'file' ? undefined : dataUri,
         mediaKind: kind,
         mediaName: name,
       });
-      setError(null);
+      if (!options?.keepError) setError(null);
       setWaiting(true);
       return true;
     },

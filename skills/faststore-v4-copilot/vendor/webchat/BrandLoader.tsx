@@ -2,8 +2,11 @@ import React from 'react';
 
 /**
  * TODO_LOADER — trocar pela metáfora do segmento da loja antes do primeiro
- * preview. Costura é o ponto de partida para moda; farmácia, autopeças e
- * mercado pedem outro gesto. Cores vêm dos tokens, não daqui.
+ * preview. O thinking é o balão que a pessoa olha: caixa 160×48, um ciclo
+ * que se fecha, a marca visível no gesto, cores dos tokens. Costura é o
+ * ponto de partida para moda; eletro, farmácia, autopeças e mercado pedem
+ * outro gesto. Três pontinhos, um spinner pequeno e esta linha horizontal
+ * não passam. Cores vêm dos tokens, não daqui.
  */
 export default function BrandLoader() {
   return (

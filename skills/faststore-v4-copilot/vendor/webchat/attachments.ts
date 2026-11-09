@@ -18,6 +18,47 @@ export const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024;
 /** What the composer offers to pick. Anything the agent can actually be sent. */
 export const ACCEPTED_FILE_TYPES = 'image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt';
 
+/**
+ * Photos are re-encoded before they leave. A raw camera file is several
+ * megabytes, and a frame that big does not come back as an error: the socket
+ * closes and the client treats it as a network drop. JPEG at 82%, capped on
+ * the long edge, is the same photo at a fraction of the size.
+ *
+ * `toDataURL` yields exactly `data:image/jpeg;base64,…`. A raw `FileReader`
+ * result can carry extra parameters (`codecs=opus`) and the socket splits the
+ * MIME on the first two separators without checking.
+ */
+const MAX_IMAGE_EDGE = 1280;
+const JPEG_QUALITY = 0.82;
+
+export async function encodeImage(file: Blob): Promise<string | null> {
+  if (typeof createImageBitmap !== 'function') return null;
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) return null;
+
+  const scale = Math.min(1, MAX_IMAGE_EDGE / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    bitmap.close?.();
+    return null;
+  }
+
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close?.();
+  return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+}
+
+/** Byte size of a `data:` URI, so the cap is applied after the JPEG shrink. */
+export function dataUriBytes(dataUri: string): number {
+  const comma = dataUri.indexOf(',');
+  const payload = comma > -1 ? dataUri.slice(comma + 1) : '';
+  return Math.floor((payload.length * 3) / 4);
+}
+
 /** The socket's own bucket of message types, from the file's MIME type. */
 export function kindOfMime(mime: string): MediaKind {
   if (mime.startsWith('image/')) return 'image';
