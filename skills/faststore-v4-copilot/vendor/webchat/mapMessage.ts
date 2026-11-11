@@ -34,6 +34,8 @@ export interface ChatMessage {
   listItems?: Array<{ title: string; description?: string }>;
   products?: ChatProduct[];
   productsHeader?: string;
+  /** Botão de link do agente (`cta_message` no fio). */
+  cta?: { label: string; url: string };
 }
 
 const MEDIA_KINDS: MediaKind[] = ['image', 'video', 'audio', 'file'];
@@ -53,6 +55,13 @@ function unescapeUrl(url: string | undefined): string | undefined {
   if (!url) return undefined;
   const trimmed = url.trim();
   return trimmed ? unescapeEscapedUrlSlashes(trimmed) : undefined;
+}
+
+function ctaOf(body: WireMessageBody): { label: string; url: string } | undefined {
+  const label = body.cta_message?.display_text?.trim();
+  const url = unescapeUrl(body.cta_message?.url);
+  if (!label || !url || !/^https?:\/\//i.test(url)) return undefined;
+  return { label, url };
 }
 
 function mediaKindOf(body: WireMessageBody): MediaKind | undefined {
@@ -145,7 +154,7 @@ export function expandFinalEnvelope(idBase: string, raw: string): ChatMessage[] 
         catalog_message: row.catalog_message,
       });
     })
-    .filter((message) => message.text.trim() || message.products?.length);
+    .filter((message) => message.text.trim() || message.products?.length || message.cta);
 }
 
 /** True once a streaming buffer is clearly the catalog envelope, not prose. */
@@ -174,7 +183,14 @@ export function mergeAgentTurn(thread: ChatMessage[], incoming: ChatMessage): Ch
   const productsAlready =
     Boolean(incoming.products?.length) &&
     thread.some((message) => message.direction === 'agent' && sameProducts(message.products, incoming.products));
-  if (textAlready && (!incoming.products?.length || productsAlready)) return thread;
+  if (textAlready && (!incoming.products?.length || productsAlready)) {
+    if (!incoming.cta) return thread;
+    const index = thread.findIndex((message) => message.direction === 'agent' && message.text.trim() === text && !message.cta);
+    if (index < 0) return thread;
+    const next = thread.slice();
+    next[index] = { ...next[index], cta: incoming.cta };
+    return next;
+  }
   if (!text && productsAlready) return thread;
   if (textAlready && incoming.products?.length) {
     const index = thread.findIndex((message) => message.direction === 'agent' && message.text.trim() === text && !message.products?.length);
@@ -215,6 +231,7 @@ export function toChatMessage(
       : undefined,
     products: products.length ? products : undefined,
     productsHeader: listHeader,
+    cta: ctaOf(body),
   };
 }
 

@@ -170,3 +170,12 @@ export const ChevronRightIcon = ({ size }: IconProps) => (
     <path d="M9 5l7 7-7 7" />
   </Svg>
 );
+
+/** Caixa com seta para fora: o botão de link (`cta_message`) do agente. */
+export const ExternalLinkIcon = ({ size }: IconProps) => (
+  <Svg size={size}>
+    <path d="M14 5h5v5" />
+    <path d="M19 5l-9 9" />
+    <path d="M17 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h5" />
+  </Svg>
+);

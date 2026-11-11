@@ -6,7 +6,7 @@ import { RichText } from './richText';
 import ProductCarousel from './ProductCarousel';
 import { suggestFollowUps } from './suggestions';
 import BrandLoader from './BrandLoader';
-import { ChatIcon, FileIcon, SearchIcon, GridIcon, TruckIcon, WrenchIcon } from './icons';
+import { ChatIcon, FileIcon, SearchIcon, GridIcon, TruckIcon, WrenchIcon, ExternalLinkIcon } from './icons';
 
 export interface QuickAction {
   icon: 'search' | 'grid' | 'truck' | 'wrench';
@@ -122,7 +122,7 @@ export default function Thread({
           !messages.slice(index + 1).some((later) => later.direction === 'user' || later.quickReplies?.length)
             ? suggestFollowUps(m.products)
             : [];
-        const hasBubble = Boolean(m.text || m.mediaUrl || m.mediaKind);
+        const hasBubble = Boolean(m.text || m.mediaUrl || m.mediaKind || m.cta);
         return (
           <div key={m.id} className={`krc-turn krc-turn--${m.direction}`}>
             {isAgent && (hasBubble ? <Avatar /> : <span className="krc-avatar-spacer" aria-hidden="true" />)}
@@ -135,6 +135,12 @@ export default function Thread({
                     <div className="krc-bubble-text">
                       {isAgent ? <RichText text={m.text} /> : m.text}
                     </div>
+                  )}
+                  {isAgent && m.cta && (
+                    <a className="krc-cta" href={m.cta.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLinkIcon size={16} />
+                      {m.cta.label}
+                    </a>
                   )}
                 </div>
               )}

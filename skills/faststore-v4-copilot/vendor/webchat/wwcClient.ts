@@ -88,6 +88,11 @@ export interface WireMessageBody {
       product_retailer_info?: WireProductItem[];
     }>;
   };
+  /** Botão de link. O widget oficial lê `display_text` + `url`. */
+  cta_message?: {
+    display_text?: string;
+    url?: string;
+  };
 }
 
 export interface AgentSocketFrame {
