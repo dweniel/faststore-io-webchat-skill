@@ -127,11 +127,35 @@ ou a linha horizontal do template não passam.
 - `prefers-reduced-motion` já zera animação em `.krc-assistant-root *`. O
   frame parado ainda mostra a marca e a pista: o keyframe `100%` coincide
   com o `0%`.
+- O balão não muda de tamanho durante a espera. Largura e altura do
+  `.krc-typing` são as mesmas em todos os frames do ciclo e em todas as frases.
+  Nada anima `width`, `height`, `padding`, `margin`, `font-size`,
+  `line-height` nem `content`: o movimento usa só `transform`, `opacity`,
+  `clip-path` e `stroke-*`. O SVG fica sempre 160×48.
+- Legenda de status embaixo do gesto (frases que giram) é opcional. Se usar,
+  é `<span className="krc-loader-caption">` dentro de
+  `.krc-typing.has-caption`, já prontos no `styles.ts`: uma linha, 200×18 px,
+  reticências reveladas por `clip-path`. Não refazer as reticências com
+  `width` animado num `inline-block`: os pontos quebram em duas ou três
+  linhas e o balão cresce 15 px e volta, a cada volta. Toda frase cabe em
+  200 px; frase que corta em reticências fica mais curta.
 - Apagar o comentário `TODO_LOADER` quando a metáfora for a da loja.
 
 Conferir com uma mensagem em voo (`.krc-typing`, aria-label "Digitando").
 O balão some quando a resposta chega, então o print pega a espera. O
 comprimento do path e o `dashoffset` de uma volta batem.
+
+O tamanho do balão também se mede, não se olha. Com a mensagem em voo, no
+console:
+
+```js
+const b = document.querySelector('.krc-typing');
+const seen = new Set();
+const id = setInterval(() => seen.add(`${b.offsetWidth}x${b.offsetHeight}`), 40);
+setTimeout(() => { clearInterval(id); console.log([...seen]); }, 9000);
+```
+
+Um valor só. Dois ou mais é o balão pulsando: corrigir antes de publicar.
 
 Movimento do painel, do launcher e do hint: a mesma ordem de tempo do site
 (no varejo editorial, perto de 200–320 ms e `cubic-bezier(.4,0,.2,1)`, sem
@@ -160,6 +184,7 @@ string renderizada, cor e UUID não.
 - o thinking (`.krc-typing`) é o gesto da loja na caixa 160×48: marca visível
   e um ciclo que fecha. Não é a linha do template, nem três pontos, nem um
   aspirador;
+- o balão do thinking mantém um tamanho só durante a espera (script acima);
 - um link da home abre o site original em outra aba e esta aba continua na home;
 - abaixo de 520 px o painel ocupa a largura. Confirmar os dois largos se a mudança mexeu no breakpoint.
 

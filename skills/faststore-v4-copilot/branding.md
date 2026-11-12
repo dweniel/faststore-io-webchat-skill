@@ -58,6 +58,12 @@ Contrato:
 
 - Mesmo lugar: na linha de espera do `CopilotThread`, ao lado do avatar, **sem balão**.
 - Caixa fixa de 160 × 48 px, para a linha não mudar de altura quando a resposta chegar.
+- A caixa também não muda durante a espera. Nada anima `width`, `height`,
+  `padding`, `font-size`, `line-height` nem `content`; o movimento usa
+  `transform`, `opacity`, `clip-path` e `stroke-*`. Texto ao lado ou embaixo
+  do loader fica numa linha só, com altura fixa e `white-space: nowrap`;
+  reticências animadas por `clip-path`, nunca por largura. Medir a linha de
+  espera em dois ciclos: um tamanho só.
 - SVG e CSS puros. Nada para baixar antes da primeira pergunta; remover `preloadTruckLoader`.
 - Uma metáfora do segmento, com as cores da marca e um ciclo que se fecha (o movimento termina num gesto da marca e recomeça).
 - `prefers-reduced-motion`: desenho parado, completo.

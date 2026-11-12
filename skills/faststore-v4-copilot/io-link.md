@@ -137,7 +137,8 @@ O thinking segue o bloco de `BrandLoader.tsx` em
 pista na largura do balão (160×48), a marca legível no centro, um traço que
 completa uma volta e volta ao desenho inicial. Círculo pontilhado, três
 pontinhos e a linha do template não passam. Sem `EXTRA` no pixel redefinindo
-o `stroke-dasharray`.
+o `stroke-dasharray`. O balão mantém o mesmo tamanho a espera inteira
+(regra e script de medição no mesmo bloco).
 
 ## Linkar
 
@@ -179,6 +180,7 @@ No workspace, logado:
 - `#wwc` sem widget nativo visível;
 - o thinking (`.krc-typing`) é o gesto da loja: pista na largura do balão,
   marca legível, traço que completa uma volta. Não é o loader do template;
+- o balão do thinking tem um tamanho só durante a espera;
 - o `master` (`https://{conta}.myvtex.com`) não carrega `webchat-panel`.
 
 Origem do socket: `https://{workspace}--{conta}.myvtex.com` precisa estar na
