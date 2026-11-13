@@ -11,6 +11,7 @@
 // Refreshing the host minicart afterwards is ported from the official widget's
 // src/utils/VTEXIOMinicartBridge.js: VTEX IO holds the orderForm in a React
 // context, and the only way in from outside React is the Fiber tree.
+import { storeApi } from './vtexFields';
 
 const MAX_FIBER_DEPTH = 150;
 const FIBER_KEY_PREFIXES = ['__reactFiber', '__reactInternalInstance'];
@@ -149,7 +150,7 @@ function refreshHostMinicart(orderForm: OrderForm): void {
 
 /** The visitor's live cart, read with their own cookies. */
 async function currentOrderForm(): Promise<OrderForm | null> {
-  const response = await fetch('/api/checkout/pub/orderForm', { credentials: 'include' });
+  const response = await fetch(storeApi('/api/checkout/pub/orderForm'), { credentials: 'include' });
   if (!response.ok) return null;
   return (await response.json()) as OrderForm;
 }
@@ -170,7 +171,7 @@ export class CartError extends Error {}
 async function postItems(orderFormId: string, path: 'items' | 'items/update', orderItems: unknown[]): Promise<OrderForm> {
   let response: Response;
   try {
-    response = await fetch(`/api/checkout/pub/orderForm/${orderFormId}/${path}`, {
+    response = await fetch(storeApi(`/api/checkout/pub/orderForm/${orderFormId}/${path}`), {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -246,7 +247,7 @@ export function openHostCart(): void {
       return;
     }
   }
-  window.location.href = '/checkout/#/cart';
+  window.location.href = storeApi('/checkout/#/cart');
 }
 
 const MINICART_OPENED = '.vtex-minicart-2-x-opened';

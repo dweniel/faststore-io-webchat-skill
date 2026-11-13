@@ -132,6 +132,10 @@ FastStore; aqui não se usa.
 Ler cor, fonte e logo da loja. Se a home estiver atrás de login, usar a marca
 pública já confirmada com o operador e dizer isso.
 
+Loja servida numa pasta do domínio (`rootPath` no `__RUNTIME__`, como
+`www.angeloni.com.br/eletro`): o vendor já chama `/api/...` e `/checkout` por
+`storeApi()`, que põe o prefixo. Não trocar por caminho fixo.
+
 O thinking segue o bloco de `BrandLoader.tsx` em
 [demo-nao-faststore.md](demo-nao-faststore.md). Caprichar é obrigatório:
 pista na largura do balão (160×48), a marca legível no centro, um traço que

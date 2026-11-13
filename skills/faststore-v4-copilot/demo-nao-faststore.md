@@ -40,7 +40,8 @@ do projeto e ligá-lo no `vite.config`. `origin` é a URL que o usuário passou.
 
 O plugin:
 
-- responde só `GET /`;
+- responde só a home: `GET /` e, quando `origin` tem caminho, esse caminho
+  também (ver "Loja sob um caminho" abaixo);
 - busca o HTML da home e reescreve URL raiz (`/caminho`) para o domínio ao vivo,
   para CSS, imagem e link continuarem certos;
 - não usa `<base href>` — isso mandaria `/src/main.tsx` para o site do cliente;
@@ -51,6 +52,35 @@ O plugin:
 
 Não espelhar `/produto`, `/categoria` nem checkout. Essas URLs não existem
 neste servidor.
+
+### Loja sob um caminho
+
+Algumas contas VTEX IO são servidas numa pasta do domínio, não na raiz
+(Angeloni Eletro: `https://www.angeloni.com.br/eletro/`, `rootPath` `/eletro`
+no `__RUNTIME__`). As páginas ficam sob o caminho: `/checkout` é 404 e
+`/eletro/checkout` abre o carrinho. `/api/...` na raiz só responde com os
+cookies da loja; uma chamada de servidor, sem cookie, dá 404 e precisa de
+`/eletro/api/...`.
+
+- `origin` é a URL com o caminho (`https://www.angeloni.com.br/eletro`). O
+  plugin busca o HTML e o catálogo nesse caminho e reescreve URL raiz só com o
+  domínio.
+- O router da loja troca o endereço para `/eletro/` depois de carregar. O
+  plugin já responde nesse caminho; na Vercel, o `vercel.json` precisa da
+  mesma regra, senão recarregar a página dá 404:
+
+  ```json
+  { "source": "/eletro", "destination": "/api/home" },
+  { "source": "/eletro/", "destination": "/api/home" }
+  ```
+
+- O catálogo pode devolver o produto noutro host da loja
+  (`eletro.angeloni.com.br/x/p`, que redireciona para
+  `www.angeloni.com.br/eletro/x/p`). `lookupProductLink` põe o caminho do
+  produto sob a loja; não afrouxar essa checagem para aceitar qualquer host.
+- Dentro da loja, o vendor chama `/api/...` e `/checkout` por `storeApi()`
+  (em `vtexFields.ts`), que lê o `rootPath`. Loja na raiz não muda nada. Não
+  trocar de volta por `/api/...` fixo.
 
 Se o JavaScript da loja redirecionar para o domínio original ou apagar a
 página, servir o HTML sem os scripts de terceiros (GTM, pixels, chat nativo)
@@ -66,7 +96,9 @@ O Send Catalog manda o SKU e muitas vezes não manda `product_url`. O botão
 dentro da loja. Nesta demo a origem é o Vite ou a Vercel, e o catálogo da loja
 não envia CORS. Troque o `fetch` de `src/webchat/product.ts` para
 `/api/product-link?sku=`, que o `homepage-plugin.mjs` responde com
-`lookupProductLink`. Em produção, `api/product-link.js` chama a mesma função.
+`lookupProductLink`. Esse `fetch` fica sem `storeApi()`: a cópia traz o
+`__RUNTIME__` da loja, e numa loja sob caminho o prefixo mandaria a chamada
+para `/eletro/api/product-link`, que a demo não tem. Em produção, `api/product-link.js` chama a mesma função.
 Não aponte o `fetch` do browser para o domínio da loja.
 
 ## Marca, antes do primeiro `npm run dev`

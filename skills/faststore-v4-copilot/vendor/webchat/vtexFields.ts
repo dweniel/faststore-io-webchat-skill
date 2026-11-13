@@ -27,7 +27,7 @@ const SESSION_INTERVAL_MS = 20_000;
 
 declare global {
   interface Window {
-    __RUNTIME__?: { account?: string; segmentToken?: string };
+    __RUNTIME__?: { account?: string; segmentToken?: string; rootPath?: string };
     VTEX_METADATA?: { account?: string };
     faststore_sdk_stores?: { get?: (key: string) => { read?: () => any } | undefined };
   }
@@ -41,6 +41,18 @@ function fastStore(key: string): any {
   }
 }
 
+/**
+ * A store path under the binding's root. A VTEX IO store served under a path
+ * (www.angeloni.com.br/eletro) keeps its pages there: `/checkout` is a 404,
+ * `/eletro/checkout` opens the cart. Its `/api/...` answers at the root only
+ * with the store's cookies, so API calls go under the root too. Stores at the
+ * domain root have no rootPath and the path is unchanged.
+ */
+export function storeApi(path: string): string {
+  const root = typeof window !== 'undefined' ? window.__RUNTIME__?.rootPath || '' : '';
+  return `${root.replace(/\/$/, '')}${path}`;
+}
+
 export function getVtexAccount(): string | null {
   return window.__RUNTIME__?.account || window.VTEX_METADATA?.account || null;
 }
@@ -48,7 +60,7 @@ export function getVtexAccount(): string | null {
 /** The whole segment payload as a string: channel, region, currency, utm_*, price tables. */
 export async function getSegment(): Promise<string | null> {
   try {
-    const response = await fetch('/api/segments');
+    const response = await fetch(storeApi('/api/segments'));
     if (response.ok) {
       const segment = await response.json();
       if (segment) return JSON.stringify(segment);
@@ -76,7 +88,7 @@ export async function getOrderFormId(): Promise<string | null> {
   if (fromFastStore) return String(fromFastStore);
 
   try {
-    const response = await fetch('/api/checkout/pub/orderForm');
+    const response = await fetch(storeApi('/api/checkout/pub/orderForm'));
     if (!response.ok) return null;
     const data = await response.json();
     return data?.orderFormId ?? null;
@@ -92,7 +104,7 @@ export async function getValidOrderFormId(): Promise<string | null> {
 
 export async function getSessionToken(): Promise<string | null> {
   try {
-    const response = await fetch('/api/sessions', {
+    const response = await fetch(storeApi('/api/sessions'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',

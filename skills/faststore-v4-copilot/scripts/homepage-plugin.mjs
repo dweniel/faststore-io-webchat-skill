@@ -4,6 +4,11 @@
  * links keep working. Do not set <base href>: it would also retarget the
  * local widget module (`/src/main.tsx`) at the client's domain.
  *
+ * `origin` may carry the store's path (https://www.angeloni.com.br/eletro):
+ * the HTML and the catalog come from that path, root-relative URLs go to the
+ * domain, and the copy is also served at that path, because the store's
+ * router rewrites the address there after it loads.
+ *
  * @param {{ origin: string, badge: string }} options
  */
 
@@ -26,12 +31,13 @@ export async function lookupProductLink(origin, skuId) {
   if (!response.ok) return null;
   const products = await response.json();
   const link = Array.isArray(products) ? products[0]?.link : null;
-  if (typeof link !== 'string' || !link.startsWith(`${site}/`)) return null;
-  return link;
+  return storeLink(site, link);
 }
 
 export function homepageDemoPlugin({ origin, badge }) {
   const site = origin.replace(/\/$/, '');
+  const host = new URL(site).origin;
+  const ownPath = new URL(`${site}/`).pathname;
 
   return {
     name: 'homepage-demo',
@@ -53,7 +59,8 @@ export function homepageDemoPlugin({ origin, badge }) {
           }
           return;
         }
-        if (req.method !== 'GET' || (path !== '/' && path !== '/index.html')) return next();
+        const isHome = path === '/' || path === '/index.html' || path === ownPath || `${path}/` === ownPath;
+        if (req.method !== 'GET' || !isHome) return next();
 
         try {
           const response = await fetch(`${site}/`, {
@@ -70,7 +77,7 @@ export function homepageDemoPlugin({ origin, badge }) {
           }
 
           let html = await response.text();
-          html = rewriteRootUrls(html, site);
+          html = rewriteRootUrls(html, host);
           html = html.replace(/<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*>/gi, '');
 
           const inject = `
@@ -133,6 +140,28 @@ function rewriteRootUrls(html, site) {
   });
   html = html.replace(/url\((['"]?)(\/(?!\/))/gi, `url($1${site}$2`);
   return html;
+}
+
+/**
+ * The catalog may answer with the product on another host of the same store
+ * (eletro.angeloni.com.br/x/p, which 301s to www.angeloni.com.br/eletro/x/p).
+ * Keep a link already under the store; otherwise move only the product path
+ * (`.../p`) under it. Anything else is not a product page of this store.
+ *
+ * @param {string} base  the store's page, without trailing slash
+ * @param {unknown} link
+ * @returns {string | null}
+ */
+function storeLink(base, link) {
+  if (typeof link !== 'string') return null;
+  if (link.startsWith(`${base}/`)) return link;
+  let path;
+  try {
+    path = new URL(link).pathname;
+  } catch {
+    return null;
+  }
+  return /^\/[^?#]*\/p$/.test(path) ? `${base}${path}` : null;
 }
 
 function escapeHtml(value) {
